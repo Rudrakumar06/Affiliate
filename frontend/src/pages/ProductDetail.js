@@ -1,42 +1,55 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { productCategories } from '../data/mock';
+import { useProduct } from '../hooks/useProducts';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Star, ShoppingCart, Heart, Share2 } from 'lucide-react';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const ProductDetail = () => {
   const { productId } = useParams();
-  
-  // Find product across all categories
-  let product = null;
-  for (const category of productCategories) {
-    const found = category.products.find(p => p.id === productId);
-    if (found) {
-      product = found;
-      break;
-    }
-  }
+  const { product, loading, error } = useProduct(productId);
 
-  if (!product) {
+  const handleBuyNow = () => {
+    if (product?.affiliate_link) {
+      // Check if it's a placeholder link
+      if (product.affiliate_link.startsWith('PLACEHOLDER_')) {
+        alert(`Affiliate link not yet configured: ${product.affiliate_link}`);
+      } else {
+        // Redirect to actual affiliate link
+        window.open(product.affiliate_link, '_blank');
+      }
+    }
+  };
+
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
         <Header />
-        <div className="container mx-auto px-4 py-20 text-center">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">Product Not Found</h1>
-          <p className="text-lg text-gray-600">The product you're looking for doesn't exist.</p>
+        <div className="container mx-auto px-4 py-20">
+          <LoadingSpinner size="xl" />
         </div>
         <Footer />
       </div>
     );
   }
 
-  const handleBuyNow = () => {
-    // This will be replaced with actual affiliate link redirect
-    alert(`Redirecting to affiliate link: ${product.affiliateLink}`);
-  };
+  if (error || !product) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+        <Header />
+        <div className="container mx-auto px-4 py-20 text-center">
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">Product Not Found</h1>
+          <p className="text-lg text-gray-600">
+            {error ? `Error: ${error}` : "The product you're looking for doesn't exist."}
+          </p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -80,9 +93,9 @@ const ProductDetail = () => {
 
             <div className="flex items-center space-x-4">
               <span className="text-3xl font-bold text-green-600">${product.price}</span>
-              <span className="text-xl text-gray-500 line-through">${product.originalPrice}</span>
+              <span className="text-xl text-gray-500 line-through">${product.original_price}</span>
               <Badge variant="destructive" className="text-sm">
-                Save ${(product.originalPrice - product.price).toFixed(2)}
+                Save ${(product.original_price - product.price).toFixed(2)}
               </Badge>
             </div>
 
