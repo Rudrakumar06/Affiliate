@@ -41,7 +41,8 @@ async def get_category_with_products(category_id: str, db: AsyncIOMotorDatabase 
     
     # Create response
     category_with_products = CategoryWithProducts(**category)
-    category_with_products.products = products
+    # Convert MongoDB documents to dictionaries
+    category_with_products.products = [dict(product) for product in products]
     
     return category_with_products
 
