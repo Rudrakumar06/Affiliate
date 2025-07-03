@@ -41,8 +41,18 @@ async def get_category_with_products(category_id: str, db: AsyncIOMotorDatabase 
     
     # Create response
     category_with_products = CategoryWithProducts(**category)
-    # Convert MongoDB documents to dictionaries
-    category_with_products.products = [dict(product) for product in products]
+    
+    # Convert MongoDB documents to dictionaries and handle ObjectId serialization
+    serialized_products = []
+    for product in products:
+        product_dict = dict(product)
+        # Convert any ObjectId to string
+        for key, value in product_dict.items():
+            if hasattr(value, '__str__') and not isinstance(value, (str, int, float, bool, list, dict)):
+                product_dict[key] = str(value)
+        serialized_products.append(product_dict)
+    
+    category_with_products.products = serialized_products
     
     return category_with_products
 
