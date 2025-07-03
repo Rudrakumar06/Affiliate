@@ -1,8 +1,46 @@
 import React from 'react';
-import { testimonials } from '../data/mock';
+import { useTestimonials } from '../hooks/useTestimonials';
 import { Star, Quote } from 'lucide-react';
+import LoadingSpinner from './LoadingSpinner';
 
 const Testimonials = () => {
+  const { testimonials, loading, error } = useTestimonials();
+
+  if (loading) {
+    return (
+      <section className="py-20 px-4 bg-white">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-bold text-gray-800 mb-4">
+              What Our
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> Customers Say</span>
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Join thousands of satisfied customers who trust us for their premium product needs
+            </p>
+          </div>
+          <LoadingSpinner size="lg" />
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-20 px-4 bg-white">
+        <div className="container mx-auto">
+          <div className="text-center">
+            <h2 className="text-5xl font-bold text-gray-800 mb-4">
+              What Our
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> Customers Say</span>
+            </h2>
+            <p className="text-xl text-red-600">Error loading testimonials: {error}</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-20 px-4 bg-white">
       <div className="container mx-auto">
