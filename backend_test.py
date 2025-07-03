@@ -186,6 +186,18 @@ def test_get_category_with_products(category_id: str):
     """Test getting a category with its products"""
     try:
         response = requests.get(f"{BASE_URL}/categories/{category_id}/products")
+        print(f"DEBUG - Response status: {response.status_code}")
+        print(f"DEBUG - Response content: {response.text[:500]}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"DEBUG - Category ID: {data.get('id')}")
+            print(f"DEBUG - Products type: {type(data.get('products'))}")
+            print(f"DEBUG - Products count: {len(data.get('products', []))}")
+            if data.get('products'):
+                print(f"DEBUG - First product type: {type(data['products'][0])}")
+                print(f"DEBUG - First product keys: {data['products'][0].keys() if isinstance(data['products'][0], dict) else 'Not a dict'}")
+        
         passed = (
             response.status_code == 200 and 
             response.json().get("id") == category_id and
@@ -201,6 +213,7 @@ def test_get_category_with_products(category_id: str):
         log_test(f"Get Category with Products (ID: {category_id})", passed, response)
         return passed
     except Exception as e:
+        print(f"DEBUG - Exception: {str(e)}")
         log_test(f"Get Category with Products (ID: {category_id})", False, error=str(e))
         return False
 
