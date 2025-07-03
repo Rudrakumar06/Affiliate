@@ -8,8 +8,16 @@ const ProductCard = ({ product }) => {
   const handleBuyNow = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    // This will be replaced with actual affiliate link redirect
-    alert(`Redirecting to affiliate link: ${product.affiliateLink}`);
+    
+    if (product?.affiliate_link) {
+      // Check if it's a placeholder link
+      if (product.affiliate_link.startsWith('PLACEHOLDER_')) {
+        alert(`Affiliate link not yet configured: ${product.affiliate_link}`);
+      } else {
+        // Redirect to actual affiliate link
+        window.open(product.affiliate_link, '_blank');
+      }
+    }
   };
 
   const handleAddToWishlist = (e) => {
@@ -19,7 +27,7 @@ const ProductCard = ({ product }) => {
     alert(`${product.name} added to wishlist!`);
   };
 
-  const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+  const discount = Math.round(((product.original_price - product.price) / product.original_price) * 100);
 
   return (
     <div className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
